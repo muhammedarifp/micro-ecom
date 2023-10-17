@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"fmt"
-	"log"
 
+	helperfunc "github.com/muhammedarifp/micro-ecom/user/internal/commonHelp/helperFunc"
 	commonhelp "github.com/muhammedarifp/micro-ecom/user/internal/commonHelp/request"
 	"github.com/muhammedarifp/micro-ecom/user/internal/domain"
 	"gorm.io/gorm"
@@ -27,13 +27,12 @@ func (u *UserRepository) SaveUserIntoDb(ctx context.Context, req *commonhelp.Use
 		Name:     req.Name,
 		Email:    req.Email,
 		Mobile:   req.Mobile,
-		Password: req.Password,
+		Password: helperfunc.PasswordHashing(req.Password),
 	}
+
 	tx := db.Create(&user)
 
 	if tx.Error != nil {
-		fmt.Println("-------------------------------------------")
-		log.Fatal(tx.Error.Error())
 		return &domain.Users{}, tx.Error
 	}
 
@@ -44,4 +43,12 @@ func (u *UserRepository) SaveUserIntoDb(ctx context.Context, req *commonhelp.Use
 		Email:    user.Email,
 		Mobile:   user.Mobile,
 	}, nil
+}
+
+func (r *UserRepository) AuthenticateUser(email, pass string) (bool, error) {
+	res := r.DB.First(&domain.Users{}, `email = ?`, email)
+	if res.Error != nil {
+		return false, fmt.Errorf("user not found")
+	}
+
 }

@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/muhammedarifp/micro-ecom/cart/internal/server"
+)
 
 func main() {
-	fmt.Println("Cart service")
+	server.ConnectGrpcServer()
 }

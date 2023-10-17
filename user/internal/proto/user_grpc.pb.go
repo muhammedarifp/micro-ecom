@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	SignupUser(ctx context.Context, in *SignupRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	SignupUser(ctx context.Context, in *SignupRequest, opts ...grpc.CallOption) (*SignupResponse, error)
 	LoginUser(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
@@ -34,8 +34,8 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) SignupUser(ctx context.Context, in *SignupRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) SignupUser(ctx context.Context, in *SignupRequest, opts ...grpc.CallOption) (*SignupResponse, error) {
+	out := new(SignupResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/SignupUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (c *userServiceClient) LoginUser(ctx context.Context, in *LoginRequest, opt
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	SignupUser(context.Context, *SignupRequest) (*UserResponse, error)
+	SignupUser(context.Context, *SignupRequest) (*SignupResponse, error)
 	LoginUser(context.Context, *LoginRequest) (*UserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -65,7 +65,7 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) SignupUser(context.Context, *SignupRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) SignupUser(context.Context, *SignupRequest) (*SignupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignupUser not implemented")
 }
 func (UnimplementedUserServiceServer) LoginUser(context.Context, *LoginRequest) (*UserResponse, error) {

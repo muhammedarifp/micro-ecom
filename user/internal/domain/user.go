@@ -5,10 +5,10 @@ import (
 )
 
 type Users struct {
-	CreateAt time.Time `json:"time"`
+	CreateAt time.Time `json:"time,omitempty" validate="required"`
 	ID       uint64    `json:"id" gorm:"primaryKey"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Mobile   string    `json:"mobile"`
-	Password string    `json:"password"`
+	Name     string    `json:"name" validate="required"`
+	Email    string    `json:"email" validate="email"`
+	Mobile   string    `json:"mobile" validate="mobile"`
+	Password string    `json:"password" validate="required min=5"`
 }
