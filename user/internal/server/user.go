@@ -2,10 +2,9 @@ package server
 
 import (
 	"context"
-	"log"
-	"strconv"
+	"fmt"
 
-	helperfunc "github.com/muhammedarifp/micro-ecom/user/internal/commonHelp/helperFunc"
+	"github.com/go-playground/validator/v10"
 	commonhelp "github.com/muhammedarifp/micro-ecom/user/internal/commonHelp/request"
 	"github.com/muhammedarifp/micro-ecom/user/internal/proto"
 	"github.com/muhammedarifp/micro-ecom/user/internal/repository"
@@ -16,27 +15,53 @@ type UserServer struct {
 	UserRepo repository.UserRepository
 }
 
-func (s *UserServer) SignupUser(ctx context.Context, req *proto.SignupRequest) (*proto.UserResponse, error) {
-	if len(req.Name) <= 1 {
-		log.Println("nil error found")
-		return &proto.UserResponse{}, nil
-	}
-
-	user, err := s.UserRepo.SaveUserIntoDb(context.Background(), &commonhelp.Users{
+func (s *UserServer) SignupUser(ctx context.Context, req *proto.SignupRequest) (*proto.SignupResponse, error) {
+	userData := commonhelp.Users{
 		Name:     req.Name,
 		Email:    req.Email,
 		Mobile:   req.Mobile,
-		Password: helperfunc.PasswordHashing(req.Password),
-	})
+		Password: req.Password,
+	}
+
+	validator := validator.New()
+	if validErr := validator.Struct(&userData); validErr != nil {
+		return &proto.SignupResponse{
+			Status: false,
+			Error:  "entered data is incorrect",
+			User:   &proto.UserResponse{},
+		}, fmt.Errorf("validation error | ", validErr.Error())
+	}
+
+	user, err := s.UserRepo.SaveUserIntoDb(context.Background(), &userData)
 
 	if err != nil {
-		return &proto.UserResponse{}, err
-	} else {
-		return &proto.UserResponse{
-			Created: user.CreateAt.String(),
-			Name:    user.Name,
-			Userid:  strconv.Itoa(int(user.ID)),
-			Email:   user.Email,
+		return &proto.SignupResponse{
+			Status: false,
+			Error:  "internal server error",
+			User:   &proto.UserResponse{},
 		}, err
 	}
+
+	return &proto.SignupResponse{
+		Status: true,
+		Error:  "",
+		User: &proto.UserResponse{
+			Created: user.CreateAt.GoString(),
+			Userid:  "1",
+			Name:    user.Name,
+			Email:   user.Email,
+		},
+	}, nil
+
+}
+
+// Login function
+
+func (*UserServer) LoginUser(ctx context.Context, req *proto.LoginRequest) (*proto.UserResponse, error) {
+	return &proto.UserResponse{
+		Userid:  "1",
+		Name:    "sssss",
+		Email:   "q",
+		Created: "sss",
+	}, nil
 }

@@ -8,4 +8,5 @@ import (
 
 type UserRepository interface {
 	SaveUserIntoDb(ctx context.Context, req commonhelp.Users) error
+	AuthenticateUser(email, password string) (bool, error)
 }

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package cart;
+
+option go_package = "./proto";
+
+service CartService {
+    rpc AddToCart(AddCartRequest) returns (AddCartResponse);
+    rpc GetAllFromCart(GetCartRequest) returns (GetCartResponse);
+}
+
+message AddCartRequest {
+    uint64 productid = 1;
+    uint32 quantity = 2;
+}
+
+message AddCartResponse {
+    bool status = 1;
+}
+
+message GetCartRequest {
+    uint64 userid = 1;
+}
+
+message GetCartResponse {
+    repeated Item items = 1;
+}
+
+message Item {
+    uint64 productid = 1;
+    string name = 2;
+    float price = 4;
+    uint32 quantity = 3;
+}
